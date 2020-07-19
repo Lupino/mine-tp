@@ -1,0 +1,69 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 65a41c3359fadccbb54754d44438c79704af6145d6901b003aeee625ce7a0bfd
+
+name:           mine-tp
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/Lupino/mine-tp#readme>
+homepage:       https://github.com/Lupino/mine-tp#readme
+bug-reports:    https://github.com/Lupino/mine-tp/issues
+author:         Lupino
+maintainer:     lmjubuntu@gmail.com
+copyright:      MIT
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/Lupino/mine-tp
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_mine_tp
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , process
+    , scotty
+    , text
+    , wai-extra
+    , yaml
+  default-language: Haskell2010
+
+executable mine-tp-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_mine_tp
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , mine-tp
+  default-language: Haskell2010
+
+test-suite mine-tp-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_mine_tp
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , mine-tp
+  default-language: Haskell2010

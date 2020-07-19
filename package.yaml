@@ -1,0 +1,56 @@
+name:                mine-tp
+version:             0.1.0.0
+github:              "Lupino/mine-tp"
+license:             BSD3
+author:              "Lupino"
+maintainer:          "lmjubuntu@gmail.com"
+copyright:           "MIT"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/Lupino/mine-tp#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  dependencies:
+  - process
+  - scotty
+  - wai-extra
+  - bytestring
+  - text
+  - aeson
+  - yaml
+
+executables:
+  mine-tp-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mine-tp
+
+tests:
+  mine-tp-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mine-tp
