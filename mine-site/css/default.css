@@ -139,3 +139,11 @@ article .header {
     font-size: 1.8rem;
   }
 }
+
+img {
+  max-width: 100%;
+}
+
+.pos {
+  cursor: pointer;
+}
