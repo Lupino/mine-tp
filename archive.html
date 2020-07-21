@@ -37,13 +37,22 @@
 
         </main>
         <script>
+          var tpApi = 'http://122.112.156.242:8000/api/tp'
           var elems = document.querySelectorAll('.pos');
           elems.forEach(function(elem) {
             elem.addEventListener('click', function() {
               var pos = elem.innerText
-              console.log(pos);
+              fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos)})
+                .then(function(rsp) {
+                  return rsp.json();
+                })
+                .then(function(data) {
+                  if (data.err) {
+                    alert(data.err);
+                  }
+                })
             });
-          })
+          });
         </script>
     </body>
 </html>
