@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 65a41c3359fadccbb54754d44438c79704af6145d6901b003aeee625ce7a0bfd
+-- hash: e4f958742a0052d8e17c27a78dc9c401f784c3c73e396355139b9352b41cf3b1
 
 name:           mine-tp
 version:        0.1.0.0
@@ -36,9 +36,11 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , http-types
     , process
     , scotty
     , text
+    , wai-cors
     , wai-extra
     , yaml
   default-language: Haskell2010

@@ -15,13 +15,16 @@ import qualified Data.Text                       as T (unpack)
 import           Data.Text.Encoding              (decodeUtf8, encodeUtf8)
 import qualified Data.Text.Lazy                  as LT (toStrict)
 import qualified Data.Yaml                       as Y
+import           Network.HTTP.Types              (status204, status403)
+import           Network.Wai.Middleware.Cors     (CorsResourcePolicy (..), cors,
+                                                  simpleCorsResourcePolicy)
 import           Network.Wai.Middleware.HttpAuth (basicAuth, extractBasicAuth)
 import           System.Environment              (getArgs)
 import           System.Exit                     (ExitCode (..))
 import           System.Process                  (system)
 import           Web.Scotty                      (ActionM, get, header, json,
-                                                  middleware, param, post,
-                                                  scotty)
+                                                  middleware, param, post, raw,
+                                                  scotty, status)
 
 data User = User
   { user     :: ByteString
@@ -49,9 +52,14 @@ requireUser :: (ByteString -> ActionM ()) -> ActionM ()
 requireUser done = do
     auth <- fmap (extractBasicAuth . encodeUtf8 . LT.toStrict) <$> header "Authorization"
     case auth of
-      Nothing            -> json $ object [ "err" .= ("No permession" :: String) ]
-      Just Nothing       -> json $ object [ "err" .= ("No permession" :: String) ]
+      Nothing            -> errorNoPermession
+      Just Nothing       -> errorNoPermession
       Just (Just (u, _)) -> done u
+
+  where errorNoPermession :: ActionM ()
+        errorNoPermession = do
+          status status403
+          json $ object [ "err" .= ("No permession" :: String) ]
 
 defaultConfig :: String
 defaultConfig = "config.yml"
@@ -80,6 +88,9 @@ runTPHandler u = do
     ExitFailure c ->
       json $ object [ "err" .= ("system error code: " ++ show c) ]
 
+optionsHandler :: ActionM ()
+optionsHandler = status status204 >> raw ""
+
 someFunc :: IO ()
 someFunc = do
   args <- getArgs
@@ -92,6 +103,19 @@ someFunc = do
     Left e -> print e
     Right Config {..} -> do
       scotty port $ do
+        middleware $ cors (const $ Just policy)
         middleware $ basicAuth (verifyUser userList) ""
         post "/api/tp" $ requireUser runTPHandler
         get "/api/tp" $ requireUser runTPHandler
+
+  where policy = simpleCorsResourcePolicy
+                   { corsMethods = [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+                   , corsRequestHeaders = [ "X-REQUEST-KEY"
+                                          , "X-REQUEST-SIGNATURE"
+                                          , "X-REQUEST-TIME"
+                                          , "X-REQUEST-TYPE"
+                                          , "X-REQUEST-NONCE"
+                                          , "Content-Type"
+                                          ]
+                   , corsMaxAge = Just 86400
+                   }
