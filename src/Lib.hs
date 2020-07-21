@@ -110,11 +110,7 @@ someFunc = do
 
   where policy = simpleCorsResourcePolicy
                    { corsMethods = [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-                   , corsRequestHeaders = [ "X-REQUEST-KEY"
-                                          , "X-REQUEST-SIGNATURE"
-                                          , "X-REQUEST-TIME"
-                                          , "X-REQUEST-TYPE"
-                                          , "X-REQUEST-NONCE"
+                   , corsRequestHeaders = [ "Authorization"
                                           , "Content-Type"
                                           ]
                    , corsMaxAge = Just 86400

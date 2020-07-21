@@ -147,3 +147,7 @@ img {
 .pos {
   cursor: pointer;
 }
+
+.size75 {
+  width: 75px;
+}
