@@ -13,3 +13,9 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: cd mine-site && nix-build && ./result/bin/site build
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./mine-site/_site
