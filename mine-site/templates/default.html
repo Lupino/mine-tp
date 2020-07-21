@@ -23,5 +23,14 @@
             <h1>$title$</h1>
             $body$
         </main>
+        <script>
+          var elems = document.querySelectorAll('.pos');
+          elems.forEach(function(elem) {
+            elem.addEventListener('click', function() {
+              var pos = elem.innerText
+              console.log(pos);
+            });
+          })
+        </script>
     </body>
 </html>

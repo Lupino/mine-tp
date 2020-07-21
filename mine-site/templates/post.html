@@ -2,9 +2,11 @@
     <section class="header">
         发表于 $date$
         $if(author)$
-            by $author$
+          作者 $author$
         $endif$
-        位置: <span class='pos'>$pos$ </span>
+        $if(pos)$
+        位置: <span class='pos'>$pos$</span>
+        $endif$
     </section>
     <section>
         $body$
