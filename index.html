@@ -18,6 +18,12 @@
                 <a href="./archive.html">归档</a>
             </nav>
         </header>
+        <div>
+            用户：<input name="username" class="size75" />
+            密码：<input name="password" type="password" class="size75" />
+            位置：<input name="pos" class="size75" />
+            <button> tp </button>
+        </div>
 
         <main role="main">
             <h1>首页</h1>
@@ -45,22 +51,67 @@
 
         </main>
         <script>
-          var tpApi = 'http://122.112.156.242:8000/api/tp'
+          var tpApi = 'https://crm.huabot.com/api/tp';
+
+          var userElem = document.querySelector('input[name=username]');
+          var passwdElem = document.querySelector('input[name=password]');
+          var posElem = document.querySelector('input[name=pos]');
+
+          function fillInput(elem, name) {
+            var v = localStorage.getItem(name);
+            if (v) {
+              elem.value = v
+            }
+          }
+
+          function tp(pos) {
+            if (!pos) {
+              alert('请输入位置');
+              return;
+            }
+            var username = userElem.value;
+            var password = passwdElem.value;
+            var authString = username + ':' + password;
+
+            var headers = new Headers();
+            headers.set('Authorization', 'Basic ' + btoa(authString));
+            headers.set('Content-Type', 'application/x-www-form-urlencoded');
+            fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos), headers: headers})
+              .then(function(rsp) {
+                return rsp.json();
+              })
+              .then(function(data) {
+                if (data.err) {
+                  alert(data.err);
+                }
+              }).catch(function(err) {
+                console.error(err);
+                alert('失败');
+              })
+          }
+
+          fillInput(userElem, 'username');
+          fillInput(passwdElem, 'password');
+          fillInput(posElem, 'pos');
+
+          document.querySelectorAll('input').forEach(function(elem) {
+            elem.addEventListener('change', function() {
+              localStorage.setItem(elem.name, elem.value);
+            });
+          });
+
           var elems = document.querySelectorAll('.pos');
           elems.forEach(function(elem) {
             elem.addEventListener('click', function() {
               var pos = elem.innerText
-              fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos)})
-                .then(function(rsp) {
-                  return rsp.json();
-                })
-                .then(function(data) {
-                  if (data.err) {
-                    alert(data.err);
-                  }
-                })
+              tp(pos);
             });
           });
+
+          document.querySelector('button').addEventListener('click', function() {
+            var pos = posElem.value;
+            tp(pos);
+          })
         </script>
     </body>
 </html>
