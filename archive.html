@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>我的世界相册 - 归档</title>
+        <link rel="stylesheet" href="./css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="./">我的世界相册</a>
+            </div>
+            <nav>
+                <a href="./">首页</a>
+                <a href="./about.html">关于</a>
+                <a href="./archive.html">归档</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>归档</h1>
+            这里可以找到我们相册的所有内容:
+<ul>
+    
+        <li>
+            <a href="./posts/2020-07-20-jungededakeng.html">君哥挖的地下大洞</a>
+            
+            (<span class="pos">497 37 759</span>)
+            
+            - 2020-07-20
+        </li>
+    
+</ul>
+
+
+        </main>
+        <script>
+          var elems = document.querySelectorAll('.pos');
+          elems.forEach(function(elem) {
+            elem.addEventListener('click', function() {
+              var pos = elem.innerText
+              console.log(pos);
+            });
+          })
+        </script>
+    </body>
+</html>
