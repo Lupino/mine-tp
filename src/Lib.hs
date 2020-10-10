@@ -69,10 +69,10 @@ verifyUser [] _ _     = return False
 verifyUser (x:xs) u p | user x == u && password x == p = return True
                       | otherwise = verifyUser xs u p
 
-genCmd :: ByteString -> String -> String
-genCmd u pos = dockerCmd ++ " sh -c '" ++ shellCmd ++ "'"
+genCmd :: ByteString -> String -> String -> String
+genCmd u world pos = dockerCmd ++ " sh -c '" ++ shellCmd ++ "'"
 
-  where cmd = "tp " ++ uu ++ " " ++ pos
+  where cmd = "execute in " ++ world ++ " run tp " ++ uu ++ " " ++ pos
         uu = T.unpack (decodeUtf8 u)
         dockerCmd = "docker exec -i -t mc"
         shellCmd = "echo \"" ++ cmd ++ "\" | rcon-cli"
@@ -80,8 +80,9 @@ genCmd u pos = dockerCmd ++ " sh -c '" ++ shellCmd ++ "'"
 runTPHandler :: ByteString -> ActionM ()
 runTPHandler u = do
   pos <- param "pos"
-  liftIO $ putStrLn $ genCmd u pos
-  r <- liftIO $ system $ genCmd u pos
+  world <- param "world"
+  liftIO $ putStrLn $ genCmd u world pos
+  r <- liftIO $ system $ genCmd u world pos
 
   case r of
     ExitSuccess   -> json $ object [ "result" .= ("OK" :: String) ]
