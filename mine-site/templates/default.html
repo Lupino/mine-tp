@@ -82,13 +82,35 @@
             });
           });
 
-          var elems = document.querySelectorAll('.pos');
-          elems.forEach(function(elem) {
-            elem.addEventListener('click', function() {
-              var pos = elem.innerText
-              var world = elem.getAttribute('data-world')
-              tp(world, pos);
-            });
+          var mainElem = document.querySelector('main');
+          function findDataElem(elem) {
+            if (elem.tagName == 'UL') {
+              return false;
+            }
+            if (elem.tagName == 'MAIN') {
+              return false;
+            }
+            if (elem.tagName == 'A') {
+              return false;
+            }
+            if (elem.getAttribute('data-pos')) {
+              return elem;
+            } else {
+              return findDataElem(elem.parentElement);
+            }
+          }
+          mainElem.addEventListener('click', function(evt) {
+            var elem = findDataElem(evt.target);
+            if (!elem) {
+              return;
+            }
+            var pos = elem.getAttribute('data-pos');
+            var world = elem.getAttribute('data-world');
+            if (pos && world) {
+              if (confirm('到 ' + world + " " + pos)) {
+                tp(world, pos);
+              }
+            }
           });
 
           document.querySelector('button').addEventListener('click', function() {
