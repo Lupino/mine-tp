@@ -1,9 +1,12 @@
 <ul>
     $for(posts)$
         <li>
+            $if(cover)$
+            <div class="image"> <img src="$cover$" /> </div>
+            $endif$
             <a href="$url$">$title$</a>
             $if(pos)$
-            (<span class='pos'>$pos$</span>)
+            ($world$: <span class='pos' data-world='$world$'>$pos$</span>)
             $endif$
             - $date$
         </li>

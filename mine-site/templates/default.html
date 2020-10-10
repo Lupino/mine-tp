@@ -21,6 +21,7 @@
         <div>
             用户：<input name="username" class="size75" />
             密码：<input name="password" type="password" class="size75" />
+            世界：<input name="world" class="size75" />
             位置：<input name="pos" class="size75" />
             <button> tp </button>
         </div>
@@ -35,6 +36,7 @@
           var userElem = document.querySelector('input[name=username]');
           var passwdElem = document.querySelector('input[name=password]');
           var posElem = document.querySelector('input[name=pos]');
+          var worldElem = document.querySelector('input[name=world]');
 
           function fillInput(elem, name) {
             var v = localStorage.getItem(name);
@@ -43,7 +45,7 @@
             }
           }
 
-          function tp(pos) {
+          function tp(world, pos) {
             if (!pos) {
               alert('请输入位置');
               return;
@@ -55,7 +57,7 @@
             var headers = new Headers();
             headers.set('Authorization', 'Basic ' + btoa(authString));
             headers.set('Content-Type', 'application/x-www-form-urlencoded');
-            fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos), headers: headers})
+            fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos) + '&world=' + encodeURIComponent(world), headers: headers})
               .then(function(rsp) {
                 return rsp.json();
               })
@@ -72,6 +74,7 @@
           fillInput(userElem, 'username');
           fillInput(passwdElem, 'password');
           fillInput(posElem, 'pos');
+          fillInput(worldElem, 'world');
 
           document.querySelectorAll('input').forEach(function(elem) {
             elem.addEventListener('change', function() {
@@ -83,13 +86,15 @@
           elems.forEach(function(elem) {
             elem.addEventListener('click', function() {
               var pos = elem.innerText
-              tp(pos);
+              var world = elem.getAttribute('data-world')
+              tp(world, pos);
             });
           });
 
           document.querySelector('button').addEventListener('click', function() {
             var pos = posElem.value;
-            tp(pos);
+            var world = worldElem.value;
+            tp(world, pos);
           })
         </script>
     </body>
