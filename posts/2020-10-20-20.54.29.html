@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>我的世界相册 - 君哥挖的地下大洞</title>
+        <title>我的世界相册 - 2020-10-20_20.54.29</title>
         <link rel="stylesheet" href="../css/default.css" />
     </head>
     <body>
@@ -21,28 +21,23 @@
         <div>
             用户：<input name="username" class="size75" />
             密码：<input name="password" type="password" class="size75" />
+            世界：<input name="world" class="size75" />
             位置：<input name="pos" class="size75" />
             <button> tp </button>
         </div>
 
         <main role="main">
-            <h1>君哥挖的地下大洞</h1>
-            <article>
+            <h1>2020-10-20_20.54.29</h1>
+            <article data-world="minecraft:the_end" data-pos="-705.702 60.00000 -923.70">
     <section class="header">
-        发表于 2020-07-20
+        发表于 2020-10-20
         
         
-        位置: <span class="pos">497 37 759</span>
+        位置: <span class="pos">-705.702 60.00000 -923.70</span>
         
     </section>
     <section>
-        <p>前几天君哥在暮色森林里闲逛，看到这里有一座小型矿山。</p>
-<p>君哥身上就只有一个喷气背包，跑进矿山里面，发现怪好多，怎么办呢？</p>
-<p>君哥想起了之前用机器人把整座山挖干净的记录，于是就造了台机器人，</p>
-<p>用命令 <code>dig 50</code> 挖了个 50x50 的大洞。</p>
-<p>挖这个洞可辛苦了，君哥要每个一段时间就要来更换原子分解机(一个挖矿神器)。</p>
-<p>君哥这么辛苦的挖这个大洞就是想把这里当作一个小型的基地。</p>
-<p><img src="../images/2020-07-20_19.36.16.png" /></p>
+        <p><img src="../images/2020-10-20_20.54.29.png" /></p>
     </section>
 </article>
 
@@ -53,6 +48,7 @@
           var userElem = document.querySelector('input[name=username]');
           var passwdElem = document.querySelector('input[name=password]');
           var posElem = document.querySelector('input[name=pos]');
+          var worldElem = document.querySelector('input[name=world]');
 
           function fillInput(elem, name) {
             var v = localStorage.getItem(name);
@@ -61,7 +57,7 @@
             }
           }
 
-          function tp(pos) {
+          function tp(world, pos) {
             if (!pos) {
               alert('请输入位置');
               return;
@@ -73,7 +69,7 @@
             var headers = new Headers();
             headers.set('Authorization', 'Basic ' + btoa(authString));
             headers.set('Content-Type', 'application/x-www-form-urlencoded');
-            fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos), headers: headers})
+            fetch(tpApi, {method: 'POST', body: 'pos=' + encodeURIComponent(pos) + '&world=' + encodeURIComponent(world), headers: headers})
               .then(function(rsp) {
                 return rsp.json();
               })
@@ -90,6 +86,7 @@
           fillInput(userElem, 'username');
           fillInput(passwdElem, 'password');
           fillInput(posElem, 'pos');
+          fillInput(worldElem, 'world');
 
           document.querySelectorAll('input').forEach(function(elem) {
             elem.addEventListener('change', function() {
@@ -97,17 +94,41 @@
             });
           });
 
-          var elems = document.querySelectorAll('.pos');
-          elems.forEach(function(elem) {
-            elem.addEventListener('click', function() {
-              var pos = elem.innerText
-              tp(pos);
-            });
+          var mainElem = document.querySelector('main');
+          function findDataElem(elem) {
+            if (elem.tagName == 'UL') {
+              return false;
+            }
+            if (elem.tagName == 'MAIN') {
+              return false;
+            }
+            if (elem.tagName == 'A') {
+              return false;
+            }
+            if (elem.getAttribute('data-pos')) {
+              return elem;
+            } else {
+              return findDataElem(elem.parentElement);
+            }
+          }
+          mainElem.addEventListener('click', function(evt) {
+            var elem = findDataElem(evt.target);
+            if (!elem) {
+              return;
+            }
+            var pos = elem.getAttribute('data-pos');
+            var world = elem.getAttribute('data-world');
+            if (pos && world) {
+              if (confirm('到 ' + world + " " + pos)) {
+                tp(world, pos);
+              }
+            }
           });
 
           document.querySelector('button').addEventListener('click', function() {
             var pos = posElem.value;
-            tp(pos);
+            var world = worldElem.value;
+            tp(world, pos);
           })
         </script>
     </body>
