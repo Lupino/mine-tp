@@ -95,8 +95,8 @@ def normal_image(data, revert = False):
 def find_num_poses(data):
     poses = [0]
     for pos in range(4, data.shape[1]):
-        imag_matrix_spited = data[:, :pos]
-        col_min = np.min(imag_matrix_spited, axis=0)
+        img_matrix_spited = data[:, :pos]
+        col_min = np.min(img_matrix_spited, axis=0)
         col_end = np.argmin(np.flip(col_min))
         if col_end > 0:
             rel_pos = pos - col_end
@@ -114,29 +114,57 @@ def load_datasets():
         if num.startswith('point'):
             num = '.'
         if num.startswith('split'):
-            num = '/'
+            num = ' '
 
         datasets.append((num[0], data.flatten()))
 
     return datasets
 
-def my_sum(x, y):
-    if len(x) != len(y):
-        return 1000
-    score = 0
-    for x0, y0 in zip(x, y):
-        if x0 != y0:
-            score += 1
+def load_worlds():
+    worlds = ['minecraft:overworld', 'minecraft:the_nether', 'minecraft:the_end']
+    datasets = []
+    for world in worlds:
+        img_path = 'datasets/{}.jpg'.format(world.split(':', 1)[1])
+        data = np.array(Image.open(img_path).convert("L"))
+        data = normal_image(data, True)
+        datasets.append((world, data.flatten()))
 
-    return score
+    return datasets
 
-def main(script, img_path):
+
+def recog_one(data, datasets):
+    x = data.flatten()
+    got = -1
+    score = -1
+    for num, dataset in datasets:
+        try:
+            new_score = np.sum(x ^ dataset)
+            if score == -1:
+                score = new_score
+                got = num
+
+            if score > new_score:
+                score = new_score
+                got = num
+        except Exception:
+            pass
+
+    return got, score
+
+
+def read_image(img_path):
+    data = np.array(Image.open(img_path).convert("L"))
+
+    data = normal_image(data)
+    data = strip_row(data)
+    data = strip_col(data)
+    return data
+
+
+def recog_num(img_path):
     datasets = load_datasets()
-    img_matrix = np.array(Image.open(img_path).convert("L"))
 
-    img_matrix = normal_image(img_matrix)
-    img_matrix = strip_row(img_matrix)
-    img_matrix = strip_col(img_matrix)
+    img_matrix = read_image(img_path)
 
     poses = find_num_poses(img_matrix)
 
@@ -145,35 +173,37 @@ def main(script, img_path):
 
     got_nums = []
     for col_start, col_end in zip(poses_start, poses_end):
-        imag_matrix_spited = img_matrix[:, col_start:col_end]
-        if not is_valid_num(imag_matrix_spited):
+        img_matrix_spited = img_matrix[:, col_start:col_end]
+        if not is_valid_num(img_matrix_spited):
             continue
-        imag_matrix_spited = strip_col(imag_matrix_spited)
-        x = imag_matrix_spited.flatten()
-        # save_image(imag_matrix_spited, '{}-{}'.format(col_start, col_end))
-        got_num = -1
-        score = -1
-        for num, dataset in datasets:
-            try:
-                new_score = my_sum(x, dataset)
-                if score == -1:
-                    score = new_score
-                    got_num = num
-
-                if score > new_score:
-                    score = new_score
-                    got_num = num
-            except Exception:
-                pass
-
+        img_matrix_spited = strip_col(img_matrix_spited)
+        x = img_matrix_spited.flatten()
+        got_num, score = recog_one(img_matrix_spited, datasets)
 
         if score == 0:
             got_nums.append(got_num)
         else:
             print(got_num, score)
-            save_image(imag_matrix_spited, '{}{}-{}'.format(os.path.basename(img_path), col_start, col_end))
+            save_image(img_matrix_spited, '{}{}-{}'.format(os.path.basename(img_path), col_start, col_end))
 
 
     print(''.join(got_nums))
+
+def recog_world(img_path):
+    worlds = load_worlds()
+    img_matrix = read_image(img_path)
+    got_world, score = recog_one(img_matrix, worlds)
+
+    if score == 0:
+        print(got_world)
+    else:
+        print('error')
+
+
+def main(script, img_path, recog_type='pos'):
+    if recog_type == 'pos':
+        recog_num(img_path)
+    else:
+        recog_world(img_path)
 
 main(*sys.argv)
